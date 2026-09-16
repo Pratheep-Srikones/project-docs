@@ -1,0 +1,20 @@
+[data-md-color-scheme="slate"] {
+  /* Deep background */
+  --md-default-bg-color: #0d1117;
+  --md-default-bg-color--light: #161b22;
+  --md-default-bg-color--lighter: #21262d;
+  --md-default-bg-color--lightest: #30363d;
+
+  /* Text colors */
+  --md-default-fg-color: #c9d1d9;
+  --md-default-fg-color--light: #8b949e;
+  --md-default-fg-color--lighter: #6e7681;
+  --md-default-fg-color--lightest: #484f58;
+
+  /* Code block backgrounds */
+  --md-code-bg-color: #161b22;
+  --md-code-fg-color: #e6edf3;
+
+  /* Accent highlights */
+  --md-typeset-a-color: #58a6ff;
+}
