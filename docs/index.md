@@ -1,61 +1,49 @@
-# Engineering & System Documentation
+# Pratheep // Docs
 
-Welcome to my central knowledge hub. This site houses architecture designs, technical specifications, CLI guides, and research documentation for my projects.
+This is my personal documentation hub — a place to document the architecture, design decisions, and technical write-ups for projects I build. If you want to understand how something I made works under the hood, you're in the right place.
 
 ---
 
-## Featured Projects
+## Projects
 
 <div class="grid cards" markdown>
+
+- :material-brain: **ArchiGen**
+
+  ***
+
+  An AI-assisted software architecture generator. Feed it requirements, get back system architecture, tech stack proposals, diagrams (Use Case, ER, Sequence, Class, Flow), and an AI chatbot to discuss tradeoffs.
+
+  Built with a microservices architecture, Google ADK for agentic workflows, and WSO2 Asgardeo for identity management.
+
+  [:octicons-arrow-right-24: View Documentation](Archigen.md)
 
 - :material-console: **Asgardeo CLI**
 
   ***
 
-  A terminal interface for identity management and automated user onboarding workflows.
+  A cross-platform terminal tool for Asgardeo identity management. Supports both a traditional CLI mode and a rich interactive TUI powered by the Charmbracelet ecosystem (Bubble Tea, Huh, Lip Gloss).
+
+  Built in Go with Cobra, Viper, and OS keyring-backed token storage.
 
   [:octicons-arrow-right-24: View Documentation](Asgardeo_CLI.md)
-
-- :material-server-network: **System Architectures**
-
-  ***
-
-  Distributed systems, networking protocols, P2P utilities, and cloud deployments.
-
-  [:octicons-arrow-right-24: Explore Designs](#)
-
-- :material-file-code: **CLI & Backend Tools**
-
-  ***
-
-  Custom terminal dashboards, automation scripts, and high-performance services.
-
-  [:octicons-arrow-right-24: View Utilities](#)
-
-- :material-school: **Research & Benchmarks**
-
-  ***
-
-  Distributed systems research, algorithmic benchmarks, and system notes.
-
-  [:octicons-arrow-right-24: Read Papers](#)
 
 </div>
 
 ---
 
-## Quick Navigation
+## About This Site
 
-| Section                 | Focus Area                                          | Status     |
-| :---------------------- | :-------------------------------------------------- | :--------- |
-| **Identity & Security** | OAuth 2.0 flows, CLI tooling, auth migrations       | Active     |
-| **Distributed Systems** | Signaling servers, chunked transfers, P2P protocols | Active     |
-| **System Automation**   | Terminal UIs, background triggers, custom scripts   | Maintained |
+This site is **not** a portfolio — it is a technical documentation hub. Each page covers the internal workings of a specific project: the architecture choices, the tradeoffs made, the libraries used, and the reasoning behind them.
+
+If you are looking for a high-level overview, start with the project cards above. If you want to go deep, the docs have you covered.
 
 ---
 
-## Tech Stack Overview
+## Tech I Work With
 
 - **Languages:** Go, Python, TypeScript, C/C++
-- **Infrastructure & Storage:** Docker, PostgreSQL, Redis, Cloudflare
-- **Protocols & Standards:** WebSockets, WebRTC, OAuth 2.0 / OIDC
+- **AI / ML:** Google ADK, Gemini API, Agentic workflows
+- **Identity & Auth:** Asgardeo (WSO2), OAuth 2.0 / OIDC
+- **Infrastructure:** Docker, PostgreSQL, Redis, FastAPI
+- **TUI / CLI:** Bubble Tea, Cobra, Charmbracelet ecosystem
