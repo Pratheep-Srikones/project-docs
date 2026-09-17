@@ -68,6 +68,12 @@ class DualEmbedder:
 
         return embedded_chunks
 
+    def dense_embed_query(self, query: str):
+        return self._dense_embed_texts([query])[0]
+
+    def sparse_embed_query(self, query: str) -> dict:
+        return self._sparse_embed_texts([query])[0]
+
     def _dense_embed_texts(
         self,
         texts: list[str],

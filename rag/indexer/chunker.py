@@ -2,7 +2,7 @@ import re
 from dataclasses import dataclass, field
 
 
-@dataclass
+@dataclass(kw_only=True)
 class DocumentChunk:
     text: str
     source: str

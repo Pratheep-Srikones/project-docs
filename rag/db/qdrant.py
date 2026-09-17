@@ -11,6 +11,9 @@ class QdrantConnector:
         self.dense_dim = dense_dim
         self.client = QdrantClient(url=url)
 
+    def collection_exists(self, collection_name: str) -> bool:
+        return self.client.collection_exists(collection_name)
+
     def ensure_collection(self, collection: str = "documents") -> None:
         if not self.client.collection_exists(collection):
             print("Collection not found, Creating...")
