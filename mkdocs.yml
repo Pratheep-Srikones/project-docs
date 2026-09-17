@@ -12,7 +12,9 @@ extra_css:
 
 nav:
   - Home: index.md
-  - Asgardeo CLI: Asgardeo_CLI.md
+  - Project Docs:
+    - ArchiGen: Archigen.md
+    - Asgardeo CLI: Asgardeo_CLI.md
 
 markdown_extensions:
   - attr_list
