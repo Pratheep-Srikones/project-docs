@@ -58,7 +58,7 @@ When building a complex CLI like the Asgardeo tool, putting all logic in one mod
 The `RootModel` holds the global state (like configuration, session tokens, and the currently active sub-view). It acts as the traffic cop for the application.
 
 - **State Tracking:** It keeps a property like `activeView` (an enum mapping to `Home`, `AppList`, `UserList`).
-- **Holding Sub-Models:** It stores instances of your sub-models (e.g., `appModel`, `userModel`) as fields within its own struct.
+- **Holding Sub-Models:** It stores instances of the sub-models (e.g., `appModel`, `userModel`) as fields within its own struct.
 
 #### 2. Delegating `Update()`
 
@@ -212,7 +212,7 @@ This is a classic race condition: two concurrent processes competing for the sam
 
 **The fix is straightforward in principle: nested forms should never run concurrently.** When a child form becomes active, the parent form must stop listening for events entirely. Only one form should own the input stream at any given time. When the child form completes or is dismissed, ownership is handed back to the parent.
 
-In practice, this means treating form activation as a explicit state transition in your Model rather than simply spawning a new goroutine. The active form is a value in your state — and your Update function routes incoming messages _only_ to whichever form is currently marked active.
+In practice, this means treating form activation as a explicit state transition in the Model rather than simply spawning a new goroutine. The active form is a value in the state, and the Update function routes incoming messages _only_ to whichever form is currently marked active.
 
 ## Screenshots
 
