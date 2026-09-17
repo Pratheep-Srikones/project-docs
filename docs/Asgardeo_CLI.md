@@ -78,17 +78,17 @@ For example, the Root might render a global navigation bar at the top, inject th
 
 ### CLI Architecture
 
-The CLI uses Cobra library to provide the functionality to execute the functions via commands, arguments and flags. It uses [Inversion of Control](https://en.wikipedia.org/wiki/Inversion_of_control) to call the core functionalities when a specific command is typed: it relies on a different type of IoC: **Control Flow Inversion,** and uses Chain of responsibility to correctly execute the functions according to the subcommands (`asg apps list` should call the `fetchApplications()` function)
+The CLI uses the [Cobra](https://cobra.dev/) library to provide command-based execution. Cobra provides command-tree based dispatch: each command registers its arguments, flags, validation rules, and execution handler. When a user types `asg apps list`, Cobra traverses the command tree (`asg` → `apps` → `list`), validates the provided flags, and invokes the corresponding handler function. This routing mechanism allows the command hierarchy to map user input directly to the appropriate core operation without the presentation layer needing to know about the underlying business logic.
 
-### Printer Class
+### Printer Abstraction
 
-In the tool the output should be printed in different formats (Colored, non colored, JSON/YAML) and should support verbose mode. Handling these configurations each and every time when the tool needs to output something is redundant, So the single instance of a printer (some object to interface with `stdin/stdio`) is needed.
+In the tool the output should be printed in different formats (Colored, non colored, JSON/YAML) and should support verbose mode. Handling these configurations each and every time when the tool needs to output something is redundant, so a shared printer abstraction is used to centralize output formatting.
 
 ![Printer Class Singleton.png](assets/img/asg/Printer_Class_Singleton.png)
 
 > **Note:** This is a draft class diagram to define the structure, concrete implementation may differ.
 
-The printer singleton will be defined on command initialization based on user preferences on verbosity and interactivity.
+The printer is initialized on command startup based on user preferences for verbosity and interactivity. The current implementation uses a shared instance for simplicity. A more robust approach would define a `Printer` interface and inject it into each command context, which would improve testability (allowing output capture in tests), make output redirection easier, and keep the CLI/TUI separation cleaner. This is a recognized trade-off: the shared instance is an MVP convenience, not an ideal long-term pattern.
 
 ## Authentication Flow
 
@@ -109,56 +109,24 @@ This implementation needs some internal changes to Asgardeo to enable users to l
 
 ## Tech Stack
 
-### 1. Python
+### Language Selection
 
-Python is often the first language developers reach for when writing scripts, but it has distinct pros and cons when those scripts evolve into full-fledged applications.
+The following decision matrix summarizes how each candidate language meets the core requirements for a CLI/TUI tool:
 
-- **The Good:** Incredible development speed. The ecosystem is rich with fantastic libraries like **Click** and **Typer** for CLIs, and **Rich** and **Textual** for stunning TUIs. It is possible to prototype something beautiful in hours.
-- **The Bad:** Distribution is a hard. It is to be assumed the user has the correct Python environment and dependencies installed, or have to be bundled using tools like PyInstaller, which creates massive executables.
-- **The Verdict:** Excellent for internal tooling or applications where the user's environment in controlled, but poor for distributing tools to the general public.
+| Requirement | Python | Java | Rust | Go |
+| ------------------- | ------ | ---- | ---- | --- |
+| Single binary | △ | △ | ✓ | ✓ |
+| Startup time | △ | ✗ | ✓ | ✓ |
+| TUI ecosystem | ✓ | △ | ✓ | ✓ |
+| Development speed | ✓ | △ | △ | ✓ |
+| Cross compilation | △ | ✓ | ✓ | ✓ |
+| Concurrency | ✓ | ✓ | ✓ | ✓ |
 
-### 2. Java
+> ✓ = strong fit, △ = possible with caveats, ✗ = poor fit_
 
-- **The Good:** Write once, run anywhere (provided the JVM is installed). Huge standard library and excellent multi-threading. Libraries like **Picocli** make writing CLIs quite pleasant.
-- **The Bad:** The JVM startup time. For a CLI command that needs to execute in milliseconds, a half-second JVM warm-up feels slow. While GraalVM Native Image solves this by compiling Java ahead-of-time into a standalone binary, the setup and compilation process is incredibly complex and resource-heavy.
-- **The Verdict:** Generally overkill and too sluggish for CLI/TUI apps unless building a tool specifically for a Java-heavy ecosystem (like Maven or Gradle).
+**Go** was selected because it uniquely satisfies all six requirements without significant trade-offs. Python's distribution story (virtual environments, PyInstaller bundles) makes it impractical for a tool intended for general distribution. Java's JVM startup latency is unacceptable for CLI workflows where commands are chained via pipes. Rust meets the technical requirements but its steeper learning curve would have significantly slowed development velocity for this project's scope.
 
-### 3. Rust
-
-Rust is the systems programming heavyweight champion, known for zero-cost abstractions and memory safety.
-
-- **The Good:** speed, microscopic memory footprint, and instant startup times. It compiles down to a single static binary, making distribution easy. The ecosystem is top-tier: **Clap** is arguably the most powerful CLI parser in existence, and **Ratatui** is a phenomenal library for building complex, highly performant TUIs.
-- **The Bad:** The learning curve is steep. Fighting the borrow checker just to get a simple terminal tool working can slow down development significantly. Compile times can also be quite long.
-- **The Verdict:** The absolute best choice if the CLI tool needs to do heavy data processing, system-level manipulation, or if maximum performance is a strict requirement.
-
-### 4. Go (Golang)
-
-Go was designed by Google to be a simple, fast, and highly concurrent systems language. It has accidentally become the undisputed king of modern CLI tooling (Docker, Kubernetes, Terraform, and GitHub CLI are all written in Go).
-
-### Why Go is the Preferred Choice for CLI/TUI
-
-Go sits perfectly in the "Goldilocks Zone" for terminal applications. It offers the performance and distribution benefits of Rust, with a development speed much closer to Python. Here is why it usually wins:
-
-#### 1. Single Static Binaries
-
-When a Go program is compiled, it produces a single, statically linked binary file. There is no JVM to install, no Python virtual environment to configure, and no hidden dependencies. Just send the user the file, they type `./app`, and it runs instantly. Cross-compiling for Windows, Mac, or Linux is as simple as setting an environment variable (`GOOS=windows go build`).
-
-#### 2. Instant Startup Times
-
-Unlike Java or standard Python, Go compiles to native machine code. When a user runs a Go CLI tool, it executes immediately. This responsiveness is critical for command-line workflows where users string together multiple commands using pipes.
-
-#### 3. The Charmbracelet Ecosystem
-
-If there is one reason Go dominates the modern TUI space, it is the **Charmbracelet** suite of libraries.
-
-- **Bubble Tea:** An incredibly powerful, functional-style framework (based on the Elm architecture) for building stateful terminal apps.
-- **Lip Gloss:** A library that allows you to style the terminal output using CSS-like rules.
-- **Bubbles:** Pre-built, highly polished TUI components (text inputs, paginators, progress bars, spinners).
-  This ecosystem has made building stunning, responsive, and cross-platform TUIs in Go an absolute joy.
-
-#### 4. Standard Library & Concurrency
-
-CLI tools often need to make HTTP requests, parse JSON, or read files. Go’s standard library handles all of this elegantly without requiring third-party packages. Furthermore, if the CLI needs to fetch data from multiple APIs simultaneously, Go’s goroutines make concurrency trivial to implement compared to Python's `asyncio` or Rust's futures.
+Go compiles to a single statically linked binary with no runtime dependencies, starts instantly, cross-compiles trivially (`GOOS=windows go build`), and has the **Charmbracelet** ecosystem (Bubble Tea, Lip Gloss, Bubbles) which is the most mature and polished TUI framework available for any language.
 
 The tool is decided to be built with the [Go Programming Language](https://go.dev/ref/spec). Additional to native Go libraries, following external libraries will be used,
 
@@ -190,7 +158,7 @@ It is possible in Machine authentication flow using the Client credentials but w
 
 #### 2. Store and reuse the token
 
-Once the user authenticates via `login` command the tool will request for all the available scopes and store the fetched token in the OS keyring securely. It increases the throughput of the CLI by not sending `/oauth2/token` requests before each requests and token security is assumed since the OS keyring is considered to be secure.
+Once the user authenticates via `login` command the tool will request for all the available scopes and store the fetched token in the OS keyring. The OS keyring provides platform-managed credential storage, which avoids writing raw secrets into ordinary configuration files and leverages the operating system's native security mechanisms. However, it does not protect against a fully compromised user account or host — if an attacker has local access under the user's session, keyring contents may be accessible. The keyring reduces exposure surface but is not a guarantee of absolute token security.
 
 But there is a limit for the length of values stored in the keyring for different OS which may make this implementation fail if JWT tokens are used since they are self contained, to mitigate this it is recommended to use opaque tokens, since their limit does not vary based on the number of scopes requested in the token.
 
@@ -213,6 +181,20 @@ This is a classic race condition: two concurrent processes competing for the sam
 **The fix is straightforward in principle: nested forms should never run concurrently.** When a child form becomes active, the parent form must stop listening for events entirely. Only one form should own the input stream at any given time. When the child form completes or is dismissed, ownership is handed back to the parent.
 
 In practice, this means treating form activation as a explicit state transition in the Model rather than simply spawning a new goroutine. The active form is a value in the state, and the Update function routes incoming messages _only_ to whichever form is currently marked active.
+
+## Failure Behavior
+
+The following documents expected failure scenarios, how they are detected, and the user-visible result:
+
+| Failure | Detection | Recovery | User-visible Result |
+| ----------------------- | --------------- | ---------------------- | ------------------------------------ |
+| Token expired | HTTP 401 | Automatic refresh or re-auth prompt | Login prompt or transparent retry |
+| API unavailable | Network error / timeout | Retry with backoff | Actionable error message with retry suggestion |
+| Keyring unavailable | Storage error | Fallback to error | Error explaining keyring setup |
+| API rate limit (429) | HTTP 429 | Backoff and retry | Retry message with wait time |
+| Invalid credentials | HTTP 401/403 | Prompt re-login | Clear error directing user to `asg login` |
+| Malformed API response | JSON parse error | Abort with error | Error with raw status for debugging |
+| TUI unexpected message | Type assertion failure | Ignore unknown message | No visible effect (graceful degradation) |
 
 ## Screenshots
 
