@@ -86,7 +86,7 @@ In the tool the output should be printed in different formats (Colored, non colo
 
 ![Printer Class Singleton.png](assets/img/asg/Printer_Class_Singleton.png)
 
-_note: this is a draft class diagram to define the structure, concrete implementation may differ_
+> **Note:** This is a draft class diagram to define the structure, concrete implementation may differ.
 
 The printer singleton will be defined on command initialization based on user preferences on verbosity and interactivity.
 
@@ -139,15 +139,15 @@ Go was designed by Google to be a simple, fast, and highly concurrent systems la
 
 Go sits perfectly in the "Goldilocks Zone" for terminal applications. It offers the performance and distribution benefits of Rust, with a development speed much closer to Python. Here is why it usually wins:
 
-**1. The Holy Grail of Distribution: Single Static Binaries**
+#### 1. Single Static Binaries
 
 When a Go program is compiled, it produces a single, statically linked binary file. There is no JVM to install, no Python virtual environment to configure, and no hidden dependencies. Just send the user the file, they type `./app`, and it runs instantly. Cross-compiling for Windows, Mac, or Linux is as simple as setting an environment variable (`GOOS=windows go build`).
 
-**2. Instant Startup Times**
+#### 2. Instant Startup Times
 
 Unlike Java or standard Python, Go compiles to native machine code. When a user runs a Go CLI tool, it executes immediately. This responsiveness is critical for command-line workflows where users string together multiple commands using pipes.
 
-**3. The Charmbracelet Ecosystem**
+#### 3. The Charmbracelet Ecosystem
 
 If there is one reason Go dominates the modern TUI space, it is the **Charmbracelet** suite of libraries.
 
@@ -156,29 +156,23 @@ If there is one reason Go dominates the modern TUI space, it is the **Charmbrace
 - **Bubbles:** Pre-built, highly polished TUI components (text inputs, paginators, progress bars, spinners).
   This ecosystem has made building stunning, responsive, and cross-platform TUIs in Go an absolute joy.
 
-**4. Standard Library & Concurrency**
+#### 4. Standard Library & Concurrency
 
 CLI tools often need to make HTTP requests, parse JSON, or read files. Go’s standard library handles all of this elegantly without requiring third-party packages. Furthermore, if the CLI needs to fetch data from multiple APIs simultaneously, Go’s goroutines make concurrency trivial to implement compared to Python's `asyncio` or Rust's futures.
 
 The tool is decided to be built with the [Go Programming Language](https://go.dev/ref/spec). Additional to native Go libraries, following external libraries will be used,
 
-| Dependency                                          | Purpose                                                                     | License            |
+| Dependency | Purpose | License |
 | --------------------------------------------------- | --------------------------------------------------------------------------- | ------------------ |
-| [Cobra](https://cobra.dev/docs/) (v 1.10.2)         | Main command execution workflow, providing commands, sub commands and flags | Apache License 2.0 |
-| [Viper](https://github.com/spf13/viper)             | Configuration management                                                    | MIT License        |
-| [Go keyring](https://github.com/zalando/go-keyring) | Secrets storage                                                             | MIT License        |
-
-| [Bubble Tea](https://github.com/charmbracelet/bubbletea)
-[Huh](https://github.com/charmbracelet/huh)
-[Lip gloss](https://github.com/charmbracelet/lipgloss)
-[log](https://github.com/charmbracelet/log)
-[Glamour](https://github.com/charmbracelet/glamour) | TUI event loop handling
-Stylized inputs
-UI styling
-logging
-Markdown rendering | MIT License
-Provided under [charm](https://charm.land/) ecosystem |
-| [i18n](https://github.com/nicksnyder/go-i18n) | localization | MIT license |
+| [Cobra](https://cobra.dev/docs/) (v 1.10.2) | Main command execution workflow, providing commands, sub commands and flags | Apache License 2.0 |
+| [Viper](https://github.com/spf13/viper) | Configuration management | MIT License |
+| [Go keyring](https://github.com/zalando/go-keyring) | Secrets storage | MIT License |
+| [Bubble Tea](https://github.com/charmbracelet/bubbletea) | TUI event loop handling | MIT License |
+| [Huh](https://github.com/charmbracelet/huh) | Stylized inputs | MIT License |
+| [Lip gloss](https://github.com/charmbracelet/lipgloss) | UI styling | MIT License |
+| [log](https://github.com/charmbracelet/log) | Logging | MIT License |
+| [Glamour](https://github.com/charmbracelet/glamour) | Markdown rendering | MIT License |
+| [i18n](https://github.com/nicksnyder/go-i18n) | Localization | MIT License |
 
 ## Tradeoffs
 
