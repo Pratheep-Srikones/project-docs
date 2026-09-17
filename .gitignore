@@ -2,3 +2,5 @@ venv/
 
 site/
 *.zip
+
+internal/
